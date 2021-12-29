@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // index.ts
 import { Command } from 'commander';
 import { CommandLoader } from '../commands/';

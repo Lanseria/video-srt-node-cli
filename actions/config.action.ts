@@ -3,7 +3,9 @@ import { Answers } from 'inquirer';
 import { Input } from '../commands';
 import * as fs from 'fs';
 import * as path from 'path';
-import { engine as ENGINE } from '../config/engine';
+import { engine as ENGINE } from '../lib/config/engine';
+import { filter as FILTER } from '../lib/config/filter';
+import { oss as OSS } from '../lib/config/oss';
 import { MESSAGES } from '../lib/ui';
 import { AbstractAction } from './abstract.action';
 
@@ -12,6 +14,19 @@ export class ConfigAction extends AbstractAction {
     await configFiles(inputs.concat(options));
   }
 }
+
+const writeConfigFiles = (data: object, filePath: string, dirPath: string) => {
+  fs.writeFile(
+    path.join(dirPath, filePath),
+    JSON.stringify(data, null, 2),
+    (err) => {
+      if (err) {
+        throw err;
+      }
+      console.log(`${filePath} success!`);
+    },
+  );
+};
 
 const configFiles = async (inputs: Input[]) => {
   const schematic = inputs.find((option) => option.name === 'schematic')!
@@ -26,18 +41,11 @@ const configFiles = async (inputs: Input[]) => {
           if (err) {
             throw err;
           }
-          fs.writeFile(
-            path.join(dirPath, 'engine.json'),
-            JSON.stringify(ENGINE, null, 2),
-            (err) => {
-              if (err) {
-                throw err;
-              }
-              console.log('suc!');
-            },
-          );
         });
       }
+      writeConfigFiles(ENGINE, 'engine.json', dirPath);
+      writeConfigFiles(FILTER, 'filter.json', dirPath);
+      writeConfigFiles(OSS, 'oss.json', dirPath);
     }
   }
   // console.log(inputs);
