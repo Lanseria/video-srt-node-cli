@@ -7,7 +7,7 @@ export class ConfigCommand extends AbstractCommand {
   public load(program: Command) {
     program
       .command('config <schematic> [dist-name]')
-      .description('config params dist name')
+      .description('设置你的配置文件夹名称')
       .alias('c')
       .action(async (schematic: string, distName: string) => {
         const options: Input[] = [];

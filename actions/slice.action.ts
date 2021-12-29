@@ -1,7 +1,9 @@
 // import chalk from 'chalk';
 import { Answers } from 'inquirer';
 import { Input } from '../commands';
-
+import { exec } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
 import { MESSAGES } from '../lib/ui';
 import { AbstractAction } from './abstract.action';
 
@@ -12,13 +14,21 @@ export class SliceAction extends AbstractAction {
 }
 
 const sliceFiles = async (inputs: Input[]) => {
-  const collectionOption = inputs.find(
-    (option) => option.name === 'collection',
-  )!.value as string;
   const schematic = inputs.find((option) => option.name === 'schematic')!
     .value as string;
-  const appName = inputs.find((option) => option.name === 'project')!
+  const videoName = inputs.find((option) => option.name === 'video-name')!
     .value as string;
-  const spec = inputs.find((option) => option.name === 'spec');
-  console.log(collectionOption, schematic, appName, spec);
+  const audioName = inputs.find((option) => option.name === 'audio-name')!
+    .value as string;
+  if (schematic === 'generate') {
+    if (videoName) {
+      const videoPath = path.join(process.cwd(), videoName);
+      const filename = path.basename(videoPath);
+      const ext = path.extname(filename);
+      const fileN = filename.split(ext)[0];
+      console.log(fileN);
+      const tempAudioName = `${fileN}-${new Date().getTime() / 1000}.mp3`;
+      exec(`ffmpeg -i ${videoPath} -ar 16000 ${audioName ?? tempAudioName}`);
+    }
+  }
 };

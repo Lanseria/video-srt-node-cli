@@ -8,7 +8,7 @@ import { GenerateCommand } from './generate.command';
 export class CommandLoader {
   public static load(program: Command): void {
     new ConfigCommand(new ConfigAction()).load(program);
-    // new SliceCommand(new SliceAction()).load(program);
+    new SliceCommand(new SliceAction()).load(program);
     // new GenerateCommand(new GenerateAction()).load(program);
 
     this.handleInvalidCommand(program);
