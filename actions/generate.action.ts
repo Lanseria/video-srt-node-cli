@@ -12,13 +12,11 @@ export class GenerateAction extends AbstractAction {
 }
 
 const generateFiles = async (inputs: Input[]) => {
-  const collectionOption = inputs.find(
-    (option) => option.name === 'collection',
-  )!.value as string;
   const schematic = inputs.find((option) => option.name === 'schematic')!
     .value as string;
-  const appName = inputs.find((option) => option.name === 'project')!
+  const audioName = inputs.find((option) => option.name === 'audio-name')!
     .value as string;
-  const spec = inputs.find((option) => option.name === 'spec');
-  console.log(collectionOption, schematic, appName, spec);
+  if (schematic === 'srt') {
+    console.log('srt 字幕生成中');
+  }
 };

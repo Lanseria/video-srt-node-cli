@@ -12,9 +12,6 @@ export class SliceCommand extends AbstractCommand {
       .action(
         async (schematic: string, videoName: string, audioName: string) => {
           const options: Input[] = [];
-          // options.push({ name: 'dry-run', value: !!command.dryRun });
-          // options.push({ name: 'flat', value: command.flat });
-
           const inputs: Input[] = [];
           inputs.push({ name: 'schematic', value: schematic });
           inputs.push({ name: 'video-name', value: videoName });
