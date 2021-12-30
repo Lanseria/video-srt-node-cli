@@ -101,3 +101,14 @@ ${text}
 `;
   return lineStr;
 };
+
+export const findSliceIntCount = (slice: number[], target: number) => {
+  let c = 0;
+  for (let i = 0; i < slice.length; i++) {
+    const v = slice[i];
+    if (target === v) {
+      c++;
+    }
+  }
+  return c;
+};

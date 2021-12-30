@@ -4,6 +4,7 @@ import { Dictionary, groupBy } from 'lodash';
 import path = require('path');
 import {
   compleSpace,
+  findSliceIntCount,
   getRealLength,
   getTextBlock,
   isChineseWords,
@@ -93,8 +94,8 @@ export class NlsFiletrans {
     }
     // console.log(audioResult);
     writeJson(audioResult, 'audioResult');
-    // 遍历输出
 
+    // 遍历输出
     const vResultList = [];
     for (const key in wordResult) {
       if (Object.prototype.hasOwnProperty.call(wordResult, key)) {
@@ -106,12 +107,19 @@ export class NlsFiletrans {
         let beginTime = 0;
         let blockBool = false;
         // 有一个中文就true
-        const ischinese = isChineseWords(wordList); //校验中文
+        // 校验中文
+        const ischinese = isChineseWords(wordList);
+        let chineseNumberWordIndexs: number[] = [];
+        let chineseNumberDiffLength = 0;
         for (let i = 0; i < wordList.length; i++) {
           const wordItem = wordList[i];
           if (blockBool || i === 0) {
             beginTime = wordItem.BeginTime;
             blockBool = false;
+          }
+          if (ischinese && blockStr === '') {
+            chineseNumberWordIndexs = [];
+            chineseNumberDiffLength = 0;
           }
           if (ischinese) {
             blockStr += wordItem.Word;
@@ -145,6 +153,7 @@ export class NlsFiletrans {
                         if (j === pVal.Blocks.length - 1) {
                           thisText = pVal.Text.substring(lastBlock, 10000);
                         } else {
+                          // 下个词提前结束
                           if (
                             i < wordList.length - 1 &&
                             wordList[i + 1].BeginTime >= pVal.EndTime
@@ -158,9 +167,11 @@ export class NlsFiletrans {
                             );
                           }
                         }
+
                         lastBlock = bVal;
 
                         if (early) {
+                          // 全部设置为 -1
                           for (let k = 0; k < pVal.Blocks.length; k++) {
                             const vb = pVal.Blocks[k];
                             if (vb !== -1) {
@@ -180,18 +191,51 @@ export class NlsFiletrans {
                           SpeechRate: pVal.SpeechRate,
                           EmotionValue: pVal.EmotionValue,
                         };
-
+                        // 回调传参
                         vResultList.push(vResult);
 
-                        if (pidx < paragraphList.length - 1) {
-                          beginTime = paragraphList[pidx + 1].BeginTime;
-                        } else {
-                          beginTime = pVal.EndTime;
-                        }
-
-                        blockStr = '';
-                        lastBlock = 0;
+                        blockBool = true;
+                        break;
                       }
+                    }
+
+                    if (
+                      findSliceIntCount(pVal.Blocks, -1) === pVal.Blocks.length
+                    ) {
+                      //全部截取完成
+                      blockStr = '';
+                      lastBlock = 0;
+                    }
+
+                    if (
+                      findSliceIntCount(pVal.Blocks, -1) ===
+                        pVal.Blocks.length - 1 &&
+                      flag === false
+                    ) {
+                      const thisText = pVal.Text.substring(lastBlock, 10000);
+                      pVal.Blocks[pVal.Blocks.length - 1] = -1;
+                      const vResult = {
+                        Text: thisText,
+                        ChannelId: channelId,
+                        BeginTime: beginTime,
+                        EndTime: wordItem.EndTime,
+                        SilenceDuration: pVal.SilenceDuration,
+                        SpeechRate: pVal.SpeechRate,
+                        EmotionValue: pVal.EmotionValue,
+                      };
+                      // 回调传参
+                      vResultList.push(vResult);
+
+                      // 覆盖下一段落的时间戳
+                      if (pidx < paragraphList.length - 1) {
+                        beginTime = paragraphList[pidx + 1].BeginTime;
+                      } else {
+                        beginTime = pVal.EndTime;
+                      }
+
+                      // 清除参数
+                      blockStr = '';
+                      lastBlock = 0;
                     }
                   }
                 }
