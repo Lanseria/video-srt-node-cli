@@ -28,15 +28,18 @@ const generateFiles = async (inputs: Input[]) => {
     ...require(path.join(process.cwd(), 'config', 'engine.json')),
   });
   if (schematic === 'srt') {
-    console.log('srt 字幕生成: ');
-    console.log('上传 Audio 文件...');
-
-    const fileRes = await ossClient.uploadAudioToCloud(
-      path.join(process.cwd(), audioName),
+    // console.log('srt 字幕生成: ');
+    // console.log('上传 Audio 文件...');
+    // const fileRes = await ossClient.uploadAudioToCloud(
+    //   path.join(process.cwd(), audioName),
+    // );
+    // console.log(`上传文件成功(${fileRes.url}), 识别中 ...`);
+    // const response = await nlsFiletrans.fileTrans(fileRes.url);
+    // nlsFiletrans.jsonBeauty(response);
+    // TODO:
+    nlsFiletrans.jsonBeauty(
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require(path.join(process.cwd(), 'config', 'demo.json')),
     );
-
-    console.log(`上传文件成功(${fileRes.url}), 识别中 ...`);
-
-    nlsFiletrans.fileTrans(fileRes.url);
   }
 };

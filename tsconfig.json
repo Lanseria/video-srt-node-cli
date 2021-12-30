@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "lib": ["es2017"],
+    "lib": ["ES2021"],
     "module": "CommonJs",
     "target": "es6",
     "skipLibCheck": true,
