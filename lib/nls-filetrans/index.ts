@@ -40,7 +40,7 @@ interface SentencesVO {
   'SpeechRate': number;
   'EmotionValue': number;
 }
-interface SentencesVOE extends SentencesVO {
+export interface SentencesVOE extends SentencesVO {
   Blocks: number[];
   TextBlocks: string[];
   BlockEmptyTag: boolean;
@@ -66,7 +66,7 @@ class SentencesE implements SentencesVOE {
   'EmotionValue': number;
 }
 
-interface WordsVO {
+export interface WordsVO {
   Word: string;
   ChannelId: number;
   BeginTime: number;
@@ -89,6 +89,10 @@ export interface NlsFiletransResponseVO {
 export class NlsFiletrans {
   private client;
   private appkey;
+  public channelCount;
+  private paragraphDict: Dictionary<SentencesVOE[]> = {};
+  private wordDict: Dictionary<WordsVO[]> = {};
+  private vResultListMap;
   constructor(opt: NlsFiletransOptVO) {
     this.client = new Client({
       accessKeyId: opt.accessKeyId,
@@ -97,6 +101,8 @@ export class NlsFiletrans {
       apiVersion: '2018-08-17',
     });
     this.appkey = opt.appkey;
+    this.channelCount = 0;
+    this.vResultListMap = new Map<number, ResultVO[]>();
   }
   /**
    * 填充最终结果
@@ -113,8 +119,13 @@ export class NlsFiletrans {
       SpeechRate: obj.SpeechRate,
       EmotionValue: obj.EmotionValue,
     };
-    // 回调传参
-    return vResult;
+    if (this.vResultListMap.has(obj.ChannelId)) {
+      const vResultList = this.vResultListMap.get(obj.ChannelId as number)!;
+      vResultList.push(vResult);
+      this.vResultListMap.set(obj.ChannelId as number, vResultList);
+    } else {
+      this.vResultListMap.set(obj.ChannelId as number, [vResult]);
+    }
   }
   /**
    * 分析句子中每个Block
@@ -122,28 +133,31 @@ export class NlsFiletrans {
    * @param Text
    * @param thisBlockWords
    */
-  useBlockFindLastWord(
-    Blocks: number[],
-    Text: string,
-    thisBlockWords: WordsVO[],
-  ) {
-    let startTextAt = 0;
-    for (let i = 0; i < Blocks.length; i++) {
+  useBlockFindLastWord(pg: SentencesVOE, thisBlockWords: WordsVO[]) {
+    for (let i = 0; i < pg.Blocks.length; i++) {
       let w = undefined;
-      const block = Blocks[i];
-      const thisText = Text.substring(startTextAt, block);
-      let thisTextRealLen = [...thisText].length;
-      // console.log(thisTextRealLen);
+      let blockBeginTime = pg.BeginTime;
+      let first = true;
+      const text = pg.TextBlocks[i];
       while ((w = thisBlockWords.shift())) {
-        // console.log(w);
-        const thisWordRealLen = [...w.Word].length;
-        if (thisTextRealLen === thisWordRealLen) {
-          console.log('block:', block, 'word:', w.Word);
-        } else {
-          thisTextRealLen -= thisWordRealLen;
+        if (first) {
+          first = false;
+          blockBeginTime = w.BeginTime;
+        }
+        if (text.endsWith(w.Word.trim())) {
+          this.fillResult({
+            Text: text,
+            ChannelId: w.ChannelId,
+            BeginTime: blockBeginTime,
+            EndTime: w.EndTime,
+            SilenceDuration: pg.SilenceDuration,
+            SpeechRate: pg.SpeechRate,
+            EmotionValue: pg.EmotionValue,
+          });
+          first = true;
+          break;
         }
       }
-      startTextAt = block;
     }
   }
   /**
@@ -156,11 +170,12 @@ export class NlsFiletrans {
     if (pg.BlockEmptyTag) {
       return this.fillResult(pg);
     } else {
-      const { Blocks, EndTime, BeginTime, Text } = pg;
+      const { EndTime, BeginTime } = pg;
       const thisBlockWords = wordList.filter((word) => {
         return word.BeginTime >= BeginTime && word.EndTime <= EndTime;
       });
-      this.useBlockFindLastWord(Blocks, Text, thisBlockWords);
+
+      this.useBlockFindLastWord(pg, thisBlockWords);
     }
   }
   /**
@@ -169,9 +184,8 @@ export class NlsFiletrans {
    * @param wordList
    */
   sliceParagraph(paragraphList: SentencesVOE[], wordList: WordsVO[]) {
-    const vResultList = [];
     paragraphList.forEach((pg) => {
-      vResultList.push(this.anylsisPg(pg, wordList));
+      this.anylsisPg(pg, wordList);
     });
   }
 
@@ -339,6 +353,7 @@ export class NlsFiletrans {
    * @returns
    */
   async buildParagraph(Sentences: SentencesVO[]) {
+    const SentencesEDict: Dictionary<SentencesVOE[]> = {};
     const SentencesDict: Dictionary<SentencesVO[]> = groupBy(
       Sentences,
       'ChannelId',
@@ -346,22 +361,21 @@ export class NlsFiletrans {
     // 处理长句子
     for (const key in SentencesDict) {
       if (Object.prototype.hasOwnProperty.call(SentencesDict, key)) {
-        let paragraphList = SentencesDict[key];
-        paragraphList = paragraphList.map((item) => {
+        const paragraphListE = SentencesDict[key].map((item) => {
           const Blocks = getTextBlock(item.Text);
-          return {
+          return new SentencesE({
             ...item,
             Blocks,
             TextBlocks: getTextBlocks(item.Text),
             Text: replaceStrs(item.Text),
             BlockEmptyTag: [0, 1].includes(Blocks.length),
-          };
+          });
         });
-        await writeJson(paragraphList, `paragraphList-${key}`);
-        SentencesDict[key] = paragraphList;
+        await writeJson(paragraphListE, `paragraphListE-${key}`);
+        SentencesEDict[key] = paragraphListE;
       }
     }
-    return SentencesDict;
+    this.paragraphDict = SentencesEDict;
   }
   /**
    * 处理短语
@@ -377,55 +391,44 @@ export class NlsFiletrans {
         await writeJson(wordList, `wordList-${key}`);
       }
     }
-    return wordDict;
+    this.wordDict = wordDict;
   }
   /**
    * 生成SRT文件
    * @param vResult 最终结果
    */
-  async buildSrt(vResult: Dictionary<ResultVO[]>) {
+  async buildSrt(vResult: ResultVO[]) {
     // 生成 Srt 文件
     let index = 0;
-    // console.log(vResult);
-    // await writeJson(vResult, 'vResult');
-    for (const channelId in vResult) {
-      if (Object.prototype.hasOwnProperty.call(vResult, channelId)) {
-        const channel = vResult[channelId].sort(
-          (a, b) => a.BeginTime - b.BeginTime,
-        );
+    let srtText = '';
+    vResult.forEach((m) => {
+      const lineStr = makeSubtitleText(index, m.BeginTime, m.EndTime, m.Text);
+      srtText += lineStr;
+      index++;
+    });
 
-        channel.forEach((m) => {
-          const lineStr = makeSubtitleText(
-            index,
-            m.BeginTime,
-            m.EndTime,
-            m.Text,
-          );
-          writeFileSync(
-            path.join(process.cwd(), 'config', `${channelId}.srt`),
-            lineStr,
-            {
-              flag: 'a',
-            },
-          );
-          index++;
-        });
-      }
-    }
+    writeFileSync(path.join(process.cwd(), 'config', `srt.srt`), srtText);
   }
 
-  async jsonBeauty(obj: NlsFiletransResponseVO) {
+  async jsonBuild(obj: NlsFiletransResponseVO) {
     const { Sentences, Words } = obj.Result;
     // 获取录音识别数据集
-    this.buildParagraph(Sentences);
-    this.buildWord(Words);
+    await this.buildParagraph(Sentences);
+    await this.buildWord(Words);
+    for (let i = 0; i < this.channelCount; i++) {
+      const oneChannelPge = this.paragraphDict[i];
+      const oneChannelWd = this.wordDict[i];
+      this.sliceParagraph(oneChannelPge, oneChannelWd);
+    }
+    writeJson(this.vResultListMap.get(0), 'vResultList');
+    this.buildSrt(this.vResultListMap.get(0)!);
   }
   /**
    * 传输文件并识别
    * @param fileLink 文件OSS名称
    * @returns
    */
-  fileTrans(fileLink: string): Promise<NlsFiletransResponseVO> {
+  fileTransData(fileLink: string): Promise<NlsFiletransResponseVO> {
     return new Promise((resolve, reject) => {
       /**
        * 提交录音文件识别请求，请求参数组合成JSON格式的字符串作为task的值。
@@ -435,7 +438,9 @@ export class NlsFiletrans {
       const task = {
         appkey: this.appkey,
         file_link: fileLink,
-        enable_words: true,
+        enable_words: true, // 设置是否输出词信息，默认值为false，开启时需要设置version为4.0。
+        enable_inverse_text_normalization: true,
+        enable_timestamp_alignment: true,
         version: '4.0', // 新接入请使用4.0版本，已接入（默认2.0）如需维持现状，请注释掉该参数设置。
       };
       const taskParams = {
@@ -467,17 +472,7 @@ export class NlsFiletrans {
           };
           const timer = setInterval(() => {
             this.client
-              .getTaskResult(
-                taskIdParams,
-                // {
-                //   agent: tunnel.httpOverHttp({
-                //     proxy: {
-                //       host: '127.0.0.1',
-                //       port: 8888,
-                //     },
-                //   }),
-                // }
-              )
+              .getTaskResult(taskIdParams)
               .then((response: NlsFiletransResponseVO) => {
                 const statusText = response.StatusText;
                 console.log(`识别结果查询响应：${statusText}`);
@@ -489,6 +484,7 @@ export class NlsFiletrans {
                     statusText == 'SUCCESS_WITH_NO_VALID_FRAGMENT'
                   ) {
                     console.log('录音文件识别成功：');
+                    writeJson(response, 'response');
                     resolve(response);
                   } else {
                     reject('录音文件识别失败!');

@@ -9,5 +9,6 @@ const config: InitialOptionsTsJest = {
     '^.+\\.ts$': 'ts-jest',
   },
   'coverageDirectory': './coverage',
+  setupFilesAfterEnv: ['./jest.setup.ts'],
 };
 export default config;

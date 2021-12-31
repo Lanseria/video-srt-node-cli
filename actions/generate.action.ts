@@ -34,12 +34,12 @@ const generateFiles = async (inputs: Input[]) => {
     //   path.join(process.cwd(), audioName),
     // );
     // console.log(`上传文件成功(${fileRes.url}), 识别中 ...`);
-    // const response = await nlsFiletrans.fileTrans(fileRes.url);
+    // const response = await nlsFiletrans.fileTransData(fileRes.url);
     // nlsFiletrans.jsonBeauty(response);
     // TODO:
-    nlsFiletrans.jsonBeauty(
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require(path.join(process.cwd(), 'config', 'demo.json')),
-    );
+    // nlsFiletrans.jsonBeauty(
+    //   // eslint-disable-next-line @typescript-eslint/no-var-requires
+    //   require(path.join(process.cwd(), 'config', 'demo.json')),
+    // );
   }
 };

@@ -75,32 +75,30 @@ export const repeatStr = (
 };
 
 //字幕时间戳转换
-export const subtitleTimeMillisecond = (time: number): string => {
-  let miao = 0;
-  let min = 0;
-  let hours = 0;
-  let millisecond = 0;
+function srtTimestamp(seconds: number) {
+  let $milliseconds = seconds + 0;
 
-  millisecond = time % 1000;
-  miao = time / 1000;
-
-  if (miao > 59) {
-    min = time / 1000 / 60;
-    miao = miao % 60;
-  }
-  if (min > 59) {
-    hours = time / 1000 / 3600;
-    min = min % 60;
-  }
-
-  //00:00:06,770
-  const miaoText = repeatStr(miao.toFixed(0), '0', 2);
-  const minText = repeatStr(min.toFixed(0), '0', 2);
-  const hoursText = repeatStr(hours.toFixed(0), '0', 2);
-  const millisecondText = repeatStr(millisecond.toFixed(0), '0', 3);
-
-  return hoursText + ':' + minText + ':' + miaoText + ',' + millisecondText;
-};
+  let $seconds = Math.floor($milliseconds / 1000);
+  let $minutes = Math.floor($seconds / 60);
+  const $hours = Math.floor($minutes / 60);
+  $milliseconds = $milliseconds % 1000;
+  $seconds = $seconds % 60;
+  $minutes = $minutes % 60;
+  return (
+    ($hours < 10 ? '0' : '') +
+    $hours +
+    ':' +
+    ($minutes < 10 ? '0' : '') +
+    $minutes +
+    ':' +
+    ($seconds < 10 ? '0' : '') +
+    $seconds +
+    ',' +
+    ($milliseconds < 100 ? '0' : '') +
+    ($milliseconds < 10 ? '0' : '') +
+    $milliseconds
+  );
+}
 
 export const makeSubtitleText = (
   index: number,
@@ -108,12 +106,9 @@ export const makeSubtitleText = (
   endTime: number,
   text: string,
 ) => {
-  const lineStr = `
-${index}
-${subtitleTimeMillisecond(startTime)} --> ${subtitleTimeMillisecond(endTime)}
-
+  const lineStr = `${index}
+${srtTimestamp(startTime)} --> ${srtTimestamp(endTime)}
 ${text}
-
 
 `;
   return lineStr;
