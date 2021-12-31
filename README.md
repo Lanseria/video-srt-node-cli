@@ -14,11 +14,11 @@ Video Srt Nodejs Cli
 
 ### 初始化
 
-    ```bash
-    npm i
-    npm run build
-    npm link
-    ```
+```bash
+npm i
+npm run build
+npm link
+```
 
 ### 配置你的阿里云
 
