@@ -20,7 +20,7 @@ npm run build
 npm link
 ```
 
-### 配置你的阿里云
+### 1. 配置你的阿里云
 
 1. 生成 `config/*.json` 文件与目录
 
@@ -42,7 +42,7 @@ npm link
 
 3. 填写你的信息
 
-### 分离视频中的音频(可省略)
+### 2. 分离视频中的音频(可省略)
 
 ```bash
 # vsnc slice generate <yourfilename.mp4|mov> [yourfilename.mp3]
@@ -51,7 +51,7 @@ vsnc slice generate demo.mp4 demo.mp3
 
 会生成 `demo.mp3` 音频文件
 
-### 生成字幕
+### 3. 生成字幕
 
 ```bash
 # vsnc generate srt <yourfilename.mp3> [yourfilename.srt]
