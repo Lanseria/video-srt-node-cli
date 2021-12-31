@@ -44,18 +44,18 @@ npm link
 
 ### 分离视频中的音频(可省略)
 
-    ```bash
-    # vsnc slice generate <yourfilename.mp4|mov> [yourfilename.mp3]
-    vsnc slice generate demo.mp4 demo.mp3
-    ```
+```bash
+# vsnc slice generate <yourfilename.mp4|mov> [yourfilename.mp3]
+vsnc slice generate demo.mp4 demo.mp3
+```
 
-    会生成 `demo.mp3` 音频文件
+会生成 `demo.mp3` 音频文件
 
 ### 生成字幕
 
-    ```bash
-    # vsnc generate srt <yourfilename.mp3> [yourfilename.srt]
-    vsnc generate srt demo.mp3 demo.srt
-    ```
+```bash
+# vsnc generate srt <yourfilename.mp3> [yourfilename.srt]
+vsnc generate srt demo.mp3 demo.srt
+```
 
-    会生成 `demo.srt` 字幕文件
+会生成 `demo.srt` 字幕文件
