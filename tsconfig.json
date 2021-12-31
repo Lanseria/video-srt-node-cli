@@ -7,7 +7,7 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "strict": true,
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": ["actions", "bin", "commands", "lib"],
   "exclude": ["node_modules"]

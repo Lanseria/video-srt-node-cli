@@ -1,11 +1,29 @@
-const symbolZhcn = ['？', '。', '，', '！', '；', '?', '.', ',', '!'];
+const symbolZhcn = [' ', '？', '。', '，', '！', '；', '?', '.', ',', '!'];
 export const getTextBlock = (text: string): number[] => {
   const blocks: number[] = [];
   const textArr = text.split('');
   for (let i = 0; i < textArr.length; i++) {
     const char = textArr[i];
     if (symbolZhcn.includes(char)) {
-      blocks.push(i);
+      blocks.push(i - blocks.length);
+    }
+  }
+  return blocks;
+};
+
+export const getTextBlocks = (text: string): string[] => {
+  const blocks: string[] = [];
+  const textArr = text.split('');
+  let startAt = 0;
+  for (let i = 0; i < textArr.length; i++) {
+    const char = textArr[i];
+    if (symbolZhcn.includes(char)) {
+      if (startAt) {
+        startAt++;
+      }
+      const str = text.substring(startAt, i);
+      blocks.push(str);
+      startAt = i;
     }
   }
   return blocks;
@@ -76,11 +94,10 @@ export const subtitleTimeMillisecond = (time: number): string => {
   }
 
   //00:00:06,770
-  miao.toString(10);
-  const miaoText = repeatStr(miao.toString(10), '0', 2);
-  const minText = repeatStr(min.toString(10), '0', 2);
-  const hoursText = repeatStr(hours.toString(10), '0', 2);
-  const millisecondText = repeatStr(millisecond.toString(10), '0', 3);
+  const miaoText = repeatStr(miao.toFixed(0), '0', 2);
+  const minText = repeatStr(min.toFixed(0), '0', 2);
+  const hoursText = repeatStr(hours.toFixed(0), '0', 2);
+  const millisecondText = repeatStr(millisecond.toFixed(0), '0', 3);
 
   return hoursText + ':' + minText + ':' + miaoText + ',' + millisecondText;
 };
