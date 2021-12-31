@@ -14,7 +14,8 @@ describe('nls-filetrans', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const demoData: NlsFiletransResponseVO = require(path.join(
     process.cwd(),
-    'config',
+    // TODO: 你可以配置为 config 设置为自己的 demo 数据
+    'test',
     'demo.json',
   ));
   const onePgData: SentencesVOE[] = require(path.join(
