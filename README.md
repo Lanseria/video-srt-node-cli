@@ -4,6 +4,8 @@ Video Srt Nodejs Cli
 
 ## 功能
 
+> 首先你得配置好 FFPMEG 环境
+
 - 配置你的阿里云
 - 分离视频中的音频
 - 生成字幕
@@ -12,39 +14,48 @@ Video Srt Nodejs Cli
 
 ### 初始化
 
-```bash
-npm i
-npm run build
-npm link
-```
+    ```bash
+    npm i
+    npm run build
+    npm link
+    ```
 
 ### 配置你的阿里云
 
 1. 生成 `config/*.json` 文件与目录
 
-```bash
-# node bin/vsnc.js config -g
-vsnc config generate
-# or
-vsnc config generate [config dir name]
-```
+   ```bash
+   # vsnc config generate [your_config_dirname]
+   vsnc config generate
+   # or
+   vsnc config generate config
+   ```
 
-2. 填写你的信息
+2. 会生成如下文件
+
+   ```
+   └─ config
+       └─ engine.json
+       └─ filter.json
+       └─ oss.json
+   ```
+
+3. 填写你的信息
 
 ### 分离视频中的音频(可省略)
 
-```bash
-# node bin/vsnc.js slice <demo.mp4>
-vsnc slice generate <demo.mp4|mov> [demo.mp3]
-```
+    ```bash
+    # vsnc slice generate <yourfilename.mp4|mov> [yourfilename.mp3]
+    vsnc slice generate demo.mp4 demo.mp3
+    ```
 
-会生成 `demo.mp3` 音频文件
+    会生成 `demo.mp3` 音频文件
 
 ### 生成字幕
 
-```bash
-# node bin/vsnc.js generate <demo.mp4>
-vsnc generate srt <demo.mp3> [demo.srt]
-```
+    ```bash
+    # vsnc generate srt <yourfilename.mp3> [yourfilename.srt]
+    vsnc generate srt demo.mp3 demo.srt
+    ```
 
-会生成 `demo.srt` 字幕文件
+    会生成 `demo.srt` 字幕文件
