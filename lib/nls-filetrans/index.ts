@@ -101,7 +101,7 @@ export class NlsFiletrans {
       apiVersion: '2018-08-17',
     });
     this.appkey = opt.appkey;
-    this.channelCount = 0;
+    this.channelCount = 2;
     this.vResultListMap = new Map<number, ResultVO[]>();
   }
   /**

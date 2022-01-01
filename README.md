@@ -51,11 +51,18 @@ vsnc slice generate demo.mp4 demo.mp3
 
 会生成 `demo.mp3` 音频文件
 
-### 3. 生成字幕
+### 3. 生成 Json 轨道字幕
 
 ```bash
-# vsnc generate srt <yourfilename.mp3> [yourfilename.srt]
-vsnc generate srt demo.mp3 demo.srt
+# vsnc generate srt <yourfilename.mp3> [yourfilename.json]
+vsnc generate json demo.mp3 demo.json
 ```
 
-会生成 `demo.srt` 字幕文件
+会生成 `demo.json` 字幕文件
+
+### 3. 选择轨道并生成 Srt 轨道字幕
+
+```bash
+# vsnc generate srt <yourfilename.json> [yourfilename.json]
+vsnc generate json demo.json demo.srt
+```
