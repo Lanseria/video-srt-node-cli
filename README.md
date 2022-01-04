@@ -53,11 +53,20 @@ vsnc slice mp3 demo.mp4 demo.mp3
 
 ### 3. 生成 Srt 字幕文件
 
+#### 1. 阿里云 API 操作
+
 ```bash
-# vsnc generate srt <yourfilename.mp3> [yourfilename.srt]
-vsnc generate srt demo.mp3 demo.srt
+# vsnc generate ali <yourfilename.mp3> [yourfilename.srt]
+vsnc generate ali demo.mp3 demo.srt
 ```
 
 此步骤会去执行阿里云的 oss 与 nls 服务 API(修改数据不需要重新去执行)
 会生成 `demo.json` 字幕 `JSON` 数据文件(方便修改)
 修改校对完 JSON 文件进行生成字幕目标文件
+
+#### 2. 腾讯云 API 操作
+
+```bash
+# vsnc generate ten <yourfilename.mp3> [yourfilename.srt]
+vsnc generate ten demo.mp3 demo.srt
+```
