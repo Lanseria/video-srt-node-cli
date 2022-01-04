@@ -283,6 +283,7 @@ export class NlsFiletrans {
         enable_words: true, // 设置是否输出词信息，默认值为false，开启时需要设置version为4.0。
         enable_inverse_text_normalization: true,
         enable_timestamp_alignment: true,
+        enable_sample_rate_adaptive: true,
         version: '4.0', // 新接入请使用4.0版本，已接入（默认2.0）如需维持现状，请注释掉该参数设置。
       };
       const taskParams = {
