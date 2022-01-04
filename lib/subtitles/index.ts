@@ -63,13 +63,13 @@ export class Subtitles {
       while ((w = Words.shift())) {
         if (first) {
           first = false;
-          blockBeginTime = w.OffsetStartMs;
+          blockBeginTime = blockBeginTime + w.OffsetStartMs;
         }
         if (text.endsWith(w.Word.trim())) {
           this.fillSliceData({
             FinalSentence: text,
             StartMs: blockBeginTime,
-            EndMs: w.OffsetEndMs,
+            EndMs: Fpg.StartMs + w.OffsetEndMs,
           });
           first = true;
           break;

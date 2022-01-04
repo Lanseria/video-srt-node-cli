@@ -71,7 +71,7 @@ export class RecClient {
               console.log('执行成功');
               resolve(descResult.Data);
             } else {
-              console.log('执行失败');
+              console.log('执行失败', Url, descResult);
               reject('执行失败');
             }
           }
