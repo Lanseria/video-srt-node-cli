@@ -19,10 +19,13 @@
     "ali-oss": "^6.16.0",
     "chalk": "^3.0.0",
     "commander": "^8.3.0",
+    "cos-nodejs-sdk-v5": "^2.11.6",
     "inquirer": "^8.2.0",
+    "js-ffmpeg": "^0.0.34",
     "lodash": "^4.17.21",
     "node-emoji": "^1.11.0",
-    "shelljs": "^0.8.4"
+    "shelljs": "^0.8.4",
+    "tencentcloud-sdk-nodejs": "^4.0.265"
   },
   "devDependencies": {
     "@types/ali-oss": "^6.16.2",

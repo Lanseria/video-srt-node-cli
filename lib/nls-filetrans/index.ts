@@ -3,12 +3,8 @@ import { writeFileSync } from 'fs';
 import { Dictionary, groupBy } from 'lodash';
 import path = require('path');
 import {
-  compleSpace,
-  findSliceIntCount,
-  getRealLength,
   getTextBlock,
   getTextBlocks,
-  isChineseWords,
   makeSubtitleText,
   replaceStrs,
 } from '../utils/str';

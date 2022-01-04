@@ -42,27 +42,22 @@ npm link
 
 3. 填写你的信息
 
-### 2. 分离视频中的音频(可省略)
+### 2. 分离视频中的音频
 
 ```bash
-# vsnc slice generate <yourfilename.mp4|mov> [yourfilename.mp3]
-vsnc slice generate demo.mp4 demo.mp3
+# vsnc slice <audioformat> <yourfilename.mp4|mov> [yourfilename.mp3]
+vsnc slice mp3 demo.mp4 demo.mp3
 ```
 
 会生成 `demo.mp3` 音频文件
 
-### 3. 生成 Json 轨道字幕
+### 3. 生成 Srt 字幕文件
 
 ```bash
-# vsnc generate srt <yourfilename.mp3> [yourfilename.json]
-vsnc generate json demo.mp3 demo.json
+# vsnc generate srt <yourfilename.mp3> [yourfilename.srt]
+vsnc generate srt demo.mp3 demo.srt
 ```
 
-会生成 `demo.json` 字幕文件
-
-### 3. 选择轨道并生成 Srt 轨道字幕
-
-```bash
-# vsnc generate srt <yourfilename.json> [yourfilename.json]
-vsnc generate json demo.json demo.srt
-```
+此步骤会去执行阿里云的 oss 与 nls 服务 API(修改数据不需要重新去执行)
+会生成 `demo.json` 字幕 `JSON` 数据文件(方便修改)
+修改校对完 JSON 文件进行生成字幕目标文件

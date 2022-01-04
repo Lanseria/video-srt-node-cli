@@ -7,25 +7,23 @@ import {
 } from '../../lib/nls-filetrans/index';
 
 import { OssClient } from '../../lib/oss/index';
+import { utilCwdPath } from '../../lib/utils/path';
 
 describe('nls-filetrans 模块测试', () => {
   let ossClient: OssClient;
   let nlsFiletrans: NlsFiletrans;
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const demoData: NlsFiletransResponseVO = require(path.join(
-    process.cwd(),
-    // TODO: 你可以配置为 config 设置为自己的 demo 数据
-    'test',
-    'demo.json',
+  const demoData: NlsFiletransResponseVO = require(utilCwdPath(
+    'test/demo.json',
   ));
   beforeAll(() => {
     nlsFiletrans = new NlsFiletrans({
-      ...require(path.join(process.cwd(), 'config', 'oss.json')),
-      ...require(path.join(process.cwd(), 'config', 'engine.json')),
+      ...require(utilCwdPath('config/oss.json')),
+      ...require(utilCwdPath('config/engine.json')),
     });
     ossClient = new OssClient(
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require(path.join(process.cwd(), 'config', 'oss.json')),
+      require(utilCwdPath('config/oss.json')),
     );
     // 设置轨道数量
     nlsFiletrans.channelCount = 2;

@@ -12,3 +12,11 @@ export const writeJson = async (
     {},
   );
 };
+
+export const writeSrt = async (
+  data: string,
+  key = 'data',
+  dirName = 'config',
+) => {
+  await fs.writeFile(path.join(process.cwd(), dirName, `${key}.srt`), data, {});
+};

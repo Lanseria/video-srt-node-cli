@@ -21,7 +21,7 @@ const sliceFiles = async (inputs: Input[]) => {
     .value as string;
   const audioName = inputs.find((option) => option.name === 'audio-name')!
     .value as string | undefined;
-  if (schematic === 'generate') {
+  if (schematic === 'aac') {
     const ffmpeg = new Ffmpeg();
     ffmpeg.extractVideoAudio(videoName, audioName);
   }
