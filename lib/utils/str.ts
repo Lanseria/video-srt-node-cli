@@ -105,7 +105,14 @@ export const makeSubtitleText = (
   startTime: number,
   endTime: number,
   text: string,
+  isLast = false,
 ) => {
+  if (isLast) {
+    return `${index}
+${srtTimestamp(startTime)} --> ${srtTimestamp(endTime)}
+${text}
+`;
+  }
   const lineStr = `${index}
 ${srtTimestamp(startTime)} --> ${srtTimestamp(endTime)}
 ${text}

@@ -1,12 +1,11 @@
 // import * as chalk from 'chalk';
-import { Answers } from 'inquirer';
 import { Input } from '../commands';
 import * as fs from 'fs';
 import * as path from 'path';
 import { engine as ENGINE } from '../lib/config/engine';
 import { filter as FILTER } from '../lib/config/filter';
 import { oss as OSS } from '../lib/config/oss';
-import { MESSAGES } from '../lib/ui';
+import { tencent as TENCENT } from '../lib/config/tencent';
 import { AbstractAction } from './abstract.action';
 
 export class ConfigAction extends AbstractAction {
@@ -46,6 +45,7 @@ const configFiles = async (inputs: Input[]) => {
       writeConfigFiles(ENGINE, 'engine.json', dirPath);
       writeConfigFiles(FILTER, 'filter.json', dirPath);
       writeConfigFiles(OSS, 'oss.json', dirPath);
+      writeConfigFiles(TENCENT, 'tencent.json', dirPath);
     }
   }
   // console.log(inputs);

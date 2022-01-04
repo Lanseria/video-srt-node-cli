@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { exec } from 'child_process';
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ffmpeg = require('js-ffmpeg');
 export class Ffmpeg {
   extractVideoAudio(videoName: string, audioName?: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -12,18 +12,19 @@ export class Ffmpeg {
       const ext = path.extname(filename);
       const fileN = filename.split(ext)[0];
       const timestamp = (new Date().getTime() / 1000).toFixed(0);
-      const tempAudioName = audioName ?? `${fileN}-${timestamp}.mp3`;
-      exec(
-        `ffmpeg -i ${videoPath} -ar 16000 ${tempAudioName}`,
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error);
-          }
-          // console.log('[shell log]: ', stdout, stderr);
+      const tempAudioName = audioName ?? `${fileN}-${timestamp}.aac`;
+      ffmpeg
+        .ffmpeg(videoPath, ['-vn'], tempAudioName, function (progress: any) {
+          console.log(progress);
+        })
+        .success(function (json: any) {
+          console.log('[shell log]: ', json);
           console.log(`音频分离成功 ${tempAudioName}`);
           resolve(tempAudioName);
-        },
-      );
+        })
+        .error(function (error: any) {
+          reject(error);
+        });
     });
   }
 }
