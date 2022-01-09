@@ -46,10 +46,10 @@ npm link
 
 ```bash
 # vsnc slice <audioformat> <yourfilename.mp4|mov> [yourfilename.mp3]
-vsnc slice mp3 demo.mp4 demo.mp3
+vsnc slice aac demo.mp4 demo.aac
 ```
 
-会生成 `demo.mp3` 音频文件
+会生成 `demo.aac` 音频文件
 
 ### 3. 生成 Srt 字幕文件
 
